@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #define BUDDY_LEVELS 5
 #define MEMORY_SIZE (1024)
-#define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS))
-#define BITMAP_SIZE 8192
+#define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS-1))
+#define BITMAP_SIZE (1<<(BUDDY_LEVELS-3))
 
 char memory[MEMORY_SIZE];
 uint8_t buffer1[BITMAP_SIZE];
@@ -13,13 +13,12 @@ BuddyAllocator alloc;
 BitMap bitmap;
 BitMap check_bitmap;
 int main(int argc, char** argv) {
-  printf("init... ");
+  printf("init... \n");
    //1 we see if we have enough memory for the buffers
-  
+  printf("BUDDY_LEVELS: %d, BITMAP_SIZE: %d, MIN_BUCKET_SIZE: %d \n",BUDDY_LEVELS,BITMAP_SIZE,MIN_BUCKET_SIZE );
   BitMap_init(&bitmap,BITMAP_SIZE*8,buffer1);
   BitMap_init(&check_bitmap,BITMAP_SIZE*8,buffer2);
   //2 we initialize the allocator
-  printf("init... ");
   BuddyAllocator_init(&alloc,
                       &bitmap,
                       &check_bitmap,
@@ -103,8 +102,11 @@ int main(int argc, char** argv) {
   BuddyAllocator_free(&alloc, p3);
   BuddyAllocator_print(&alloc);
   printf("************************************************************************************************************\n"); */
+  int* array=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*256);
+   BuddyAllocator_print(&alloc);
+   int* arroy=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*256);
 
-  BuddyAllocator_print(&alloc);
+ /*  BuddyAllocator_print(&alloc);
   int* array=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*64);
   BuddyAllocator_print(&alloc);
   for(int i=0; i<64; i++)array[i]=i;
@@ -152,19 +154,5 @@ int main(int argc, char** argv) {
   BuddyAllocator_free(&alloc,cortini);
   BuddyAllocator_print(&alloc);
   BuddyAllocator_free(&alloc,string);
-  BuddyAllocator_print(&alloc);
-/*   printf("\n\n************************************************************************************************************\n");
-  array=(int*) malloc(sizeof(int)*64);
-  for(int i=0; i<64; i++)array[i]=i;
-  printf("[");
-  for(int i=0; i<64; i++)printf("%d, ",array[i]);
-  printf("\b\b]\n");
-  printf("%p\n", array);
-  free(array);
-  printf("%p\n", array);
-  
-  array[1]=10000;
-  printf("[");
-  for(int i=0; i<64; i++)printf("%d, ",array[i]);
-  printf("\b\b]\n"); */
+  BuddyAllocator_print(&alloc); */
 }

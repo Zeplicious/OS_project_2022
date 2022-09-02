@@ -59,8 +59,8 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level){
   assert(level <= alloc->num_levels);
   int idx=1<<(level);
   //printf("idx: %d \n", idx);
-  while(BitMap_bit(alloc->bitmap,idx)||BitMap_bit(alloc->check_bitmap,idx)){
-    if(++idx==1<<(level))return 0;
+  while(idx!=1<<(level+1)&&(BitMap_bit(alloc->bitmap,idx)||BitMap_bit(alloc->check_bitmap,idx))){
+    if(++idx==1<<(level+1))return 0;
   }
 
   BitMap_setBit(alloc->bitmap,idx,1);
@@ -82,7 +82,7 @@ void alloc_upwardSet(BuddyAllocator* alloc,int idx){
 }
 void alloc_downwardSet(BuddyAllocator* alloc,int idx){
  // printf("idx: %d, max_idx: %d \n",idx,(1<<alloc->num_levels)-1);
-  if(idx>(1<<alloc->num_levels))return;
+  if(idx>=(1<<alloc->num_levels))return;
   //assert(!BitMap_bit(alloc->check_bitmap,idx));
   BitMap_setBit(alloc->check_bitmap,idx,1);
   //printf("\n\n");
@@ -97,7 +97,6 @@ void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int idx){
   BitMap_setBit(alloc->bitmap,idx,0);
   free_upwardSet(alloc,idx);
   free_downwardSet(alloc,idx);
-  return idx;
 }
 void free_upwardSet(BuddyAllocator* alloc,int idx){
   int parent=parentIdx(idx);
@@ -118,7 +117,7 @@ void free_downwardSet(BuddyAllocator* alloc,int idx){
 //allocates memory
 void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
   // we determine the level of the page
-  int mem_size=(1<<alloc->num_levels)*alloc->min_bucket_size;
+  int mem_size=alloc->memory_size;
   int  level=floor(log2(mem_size/(size)));
 
   // if the level is too small, we pad it to max
@@ -133,8 +132,10 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
 
   int buddy=BuddyAllocator_getBuddy(alloc, level);
   printf("buddy: %d, level: %d \n", buddy, level);
-  if (!buddy)
-    return;
+  if (buddy==0){
+    printf("Out of Memory\n");
+    return NULL;
+  }
   int memory_offset=(buddy-(1<<(level)))*alloc->memory_size/(1<<(level));
   // we write in the memory region managed the buddy address
   return  alloc->memory+memory_offset; 
@@ -147,7 +148,7 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
   char* p=(char*) mem;
   int offset=p-alloc->memory;
   printf("offset: %d \n", offset);
-  int idx;
+  assert(offset<alloc->memory_size);
   int unit=alloc->memory_size;
   int start_level=0;
   while(offset%unit){
@@ -162,6 +163,7 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
     if(BitMap_bit(alloc->bitmap,start_index)!=0)break;
     start_index=start_index<<1;
     start_level++;
+    assert(start_index<alloc->bitmap->num_bits);
   }
 /*   unit=alloc->memory_size/(1<<start_level);
   printf("unit: %d \n", unit);
@@ -179,7 +181,7 @@ void BuddyAllocator_print(BuddyAllocator* alloc){
     for(int i=0; i<(1<<(alloc->num_levels-1));i++)printf("------------");
     printf("\n");
     printf("level %d:    ",level);
-    for (position; position< 1<<(level+1); position++){
+    for (position; position< 1<<(level+1) ; position++){
       if(position%2&&position!=1)printf("\\");
       else printf("|");
       printf("%d:(%d, %d) ",position,BitMap_bit(alloc->bitmap,position), BitMap_bit(alloc->check_bitmap,position));

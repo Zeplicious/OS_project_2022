@@ -20,7 +20,6 @@ void BitMap_init(BitMap* bit_map, int num_bits, uint8_t* buffer){
 void BitMap_setBit(BitMap* bit_map, int bit_num, int status){
   // get byte
   int byte_num=bit_num>>3;
-  
   assert(byte_num<bit_map->buffer_size);
   int bit_in_byte=bit_num-(byte_num<<3);
   //printf("byte_num: %d, bit_num: %d, bit_in_byte: %d\nadding: %d \n",byte_num,bit_num,bit_in_byte, (1<<bit_in_byte)); 
