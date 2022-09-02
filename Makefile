@@ -4,8 +4,9 @@ AR=ar
 
 OBJS=bit_map.o\
 	buddy_allocator.o\
+	lista.o\
 
-HEADERS=bit_map.h buddy_allocator.h
+HEADERS=bit_map.h buddy_allocator.h lista.h
 
 LIBS=libbuddy.a
 

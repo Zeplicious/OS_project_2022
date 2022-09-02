@@ -1,6 +1,6 @@
 #pragma once
 #include "bit_map.h"
-
+#include "lista.h"
 #define LEVELS 16
 
 
@@ -47,3 +47,4 @@ void free_upwardSet(BuddyAllocator* alloc,int idx);
 void alloc_upwardSet(BuddyAllocator* alloc,int idx);
 void alloc_downwardSet(BuddyAllocator* alloc,int idx);
 void free_downwardSet(BuddyAllocator* alloc,int idx);
+void BuddyAllocator_print(BuddyAllocator* alloc);
