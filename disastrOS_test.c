@@ -15,24 +15,35 @@ void sleeperFunction(void* args){
 
 void childFunction(void* args){
   printf("Hello, I am the child function %d\n",disastrOS_getpid());
-  printf("I will iterate a bit, before terminating\n");
   /* int type=0;
   int mode=0; 
   int fd=disastrOS_openResource(disastrOS_getpid(),type,mode);
   printf("fd=%d\n", fd);
   printf("PID: %d, terminating\n", disastrOS_getpid()); */
 
-  for (int i=0; i<(disastrOS_getpid()+1); ++i){
-    printf("PID: %d, iterate %d\n", disastrOS_getpid(), i);
-    int* array=(int*) disastrOS_malloc(sizeof(int)*64);
-    for(int i=0; i<64; i++)array[i]=i;
-    printf("[");
-    for(int i=0; i<64; i++)printf("%d, ",array[i]);
-    printf("\b\b]\n");
-    disastrOS_free(array);
-    printf("%p\n", array);
-    disastrOS_sleep((20-disastrOS_getpid())*5);
-  }
+  printf("PID: %d\n",disastrOS_getpid());
+
+  int* array1=(int*) disastrOS_malloc(sizeof(int)*4096*disastrOS_getpid());
+  int* array2=(int*) disastrOS_malloc(sizeof(int)*2048*disastrOS_getpid());
+
+  for(int i=0; i<2048*disastrOS_getpid(); i++)array2[i]=i;
+
+  /* printf("[");
+  for(int i=0; i<128*disastrOS_getpid(); i++)printf("%d, ",array2[i]);
+  printf("\b\b]\n"); */
+
+  int* array3=(int*) disastrOS_malloc(sizeof(int)*64*disastrOS_getpid());
+
+  for(int i=0; i<64*disastrOS_getpid(); i++)array3[i]=64*disastrOS_getpid()-i;
+
+  /* printf("[");
+  for(int i=0; i<64*disastrOS_getpid(); i++)printf("%d, ",array3[i]);
+  printf("\b\b]\n"); */
+
+  disastrOS_free(array3);
+  disastrOS_free(array2);
+  disastrOS_free(array1);
+
   disastrOS_exit(disastrOS_getpid()+1);
 }
 
@@ -46,12 +57,6 @@ void initFunction(void* args) {
   printf("I feel like to spawn 10 nice threads\n");
   int alive_children=0;
   for (int i=0; i<10; ++i) {
-    int type=0;
-    int mode=DSOS_CREATE;
-    printf("mode: %d\n", mode);
-    printf("opening resource (and creating if necessary)\n");
-    int fd=disastrOS_openResource(i,type,mode);
-    printf("fd=%d\n", fd);
     disastrOS_spawn(childFunction, 0);
     alive_children++;
   }
