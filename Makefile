@@ -1,16 +1,42 @@
 CC=gcc
-CCOPTS=--std=gnu99 -Wall -D_LIST_DEBUG_ 
+CCOPTS=--std=gnu99 -Wall 
 AR=ar
 
-OBJS=bit_map.o\
-	buddy_allocator.o\
-	lista.o\
+HEADERS=disastrOS.h\
+	disastrOS_constants.h\
+	disastrOS_descriptor.h\
+	disastrOS_globals.h\
+	disastrOS_pcb.h\
+	disastrOS_resource.h\
+	disastrOS_syscalls.h\
+	disastrOS_timer.h\
+	linked_list.h\
+	pool_allocator.h\
 
-HEADERS=bit_map.h buddy_allocator.h lista.h
+OBJS=pool_allocator.o\
+     linked_list.o\
+     disastrOS_timer.o\
+     disastrOS_pcb.o\
+     disastrOS_resource.o\
+     disastrOS_descriptor.o\
+     disastrOS.o\
+     disastrOS_fork.o\
+     disastrOS_wait.o\
+     disastrOS_spawn.o\
+     disastrOS_exit.o\
+     disastrOS_shutdown.o\
+     disastrOS_schedule.o\
+     disastrOS_preempt.o\
+     disastrOS_sleep.o\
+     disastrOS_open_resource.o\
+     disastrOS_close_resource.o\
+     disastrOS_destroy_resource.o
 
-LIBS=libbuddy.a
+LIBS=libdisastrOS.a
 
-BINS=pool_allocator_test buddy_test buddy_allocator_test
+BINS=disastrOS_test
+
+#disastros_test
 
 .phony: clean all
 
@@ -20,18 +46,12 @@ all:	$(LIBS) $(BINS)
 %.o:	%.c $(HEADERS)
 	$(CC) $(CCOPTS) -c -o $@  $<
 
-libbuddy.a: $(OBJS) 
+libdisastrOS.a: $(OBJS) $(HEADERS) 
 	$(AR) -rcs $@ $^
 	$(RM) $(OBJS)
 
-pool_allocator_test: pool_allocator_test.o $(LIBS)
-	$(CC) $(CCOPTS) -o $@ $^ 
-
-buddy_test: buddy_test.o $(LIBS)
-	$(CC) $(CCOPTS) -o $@ $^ -lm
-
-buddy_allocator_test: buddy_allocator_test.o $(LIBS)
-	$(CC) $(CCOPTS) -o $@ $^ -lm
+disastrOS_test:		disastrOS_test.c $(LIBS)
+	$(CC) $(CCOPTS) -o $@ $^ -L./Buddy_allocator -lbuddy -lm
 
 clean:
 	rm -rf *.o *~ $(LIBS) $(BINS)

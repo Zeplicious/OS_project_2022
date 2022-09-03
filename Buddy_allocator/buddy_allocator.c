@@ -66,16 +66,14 @@ int BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level){
   BitMap_setBit(alloc->bitmap,idx,1);
   alloc_upwardSet(alloc,parentIdx(idx));
   alloc_downwardSet(alloc,idx);
-  //printf("\n\n");
-  //printf("\n\n");
   return idx;
 }
 void alloc_upwardSet(BuddyAllocator* alloc,int idx){
   int parent=parentIdx(idx);
-  if(!BitMap_bit(alloc->check_bitmap,idx)){//risalgo l'albero fino alla root o fino a che non trovo un 1
-    BitMap_setBit(alloc->check_bitmap,idx,1);
-    //printf("\n\n");
-    if(idx!=1)alloc_upwardSet(alloc,parent);
+  if(!BitMap_bit(alloc->check_bitmap,idx)){//risalgo fino a che non trovo un 1
+    BitMap_setBit(alloc->check_bitmap,idx,1); //occupo il nodo
+    if(idx!=1)//se non mi trovo nel nodo radice
+      alloc_upwardSet(alloc,parent);
     else return;
   }
   else return;
@@ -83,9 +81,7 @@ void alloc_upwardSet(BuddyAllocator* alloc,int idx){
 void alloc_downwardSet(BuddyAllocator* alloc,int idx){
  // printf("idx: %d, max_idx: %d \n",idx,(1<<alloc->num_levels)-1);
   if(idx>=(1<<alloc->num_levels))return;
-  //assert(!BitMap_bit(alloc->check_bitmap,idx));
   BitMap_setBit(alloc->check_bitmap,idx,1);
-  //printf("\n\n");
   alloc_downwardSet(alloc,idx*2);
   alloc_downwardSet(alloc,(idx*2)+1);
 
@@ -131,22 +127,20 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size) {
   // we get a buddy of that size;
 
   int buddy=BuddyAllocator_getBuddy(alloc, level);
-  printf("buddy: %d, level: %d \n", buddy, level);
   if (buddy==0){
     printf("Out of Memory\n");
     return NULL;
   }
   int memory_offset=(buddy-(1<<(level)))*alloc->memory_size/(1<<(level));
-  // we write in the memory region managed the buddy address
+  printf("buddy: %d, level: %d, memory_offset: %d \n", buddy, level, memory_offset);
   return  alloc->memory+memory_offset; 
 }
 //releases allocated memory
 void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
   
   printf("freeing %p\n", mem);
-  // we retrieve the buddy from the system
   char* p=(char*) mem;
-  int offset=p-alloc->memory;
+  int offset=p-alloc->memory;//calcolo l'offset tra il primo indirizzo del buffer, e l'indirizzo di memoria da liberare
   printf("offset: %d \n", offset);
   assert(offset<alloc->memory_size);
   int unit=alloc->memory_size;
@@ -165,15 +159,11 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
     start_level++;
     assert(start_index<alloc->bitmap->num_bits);
   }
-/*   unit=alloc->memory_size/(1<<start_level);
-  printf("unit: %d \n", unit);
-  for(int i; i<unit; i++) alloc->memory[offset+i]=0;
-  printf("idx: %d \n", start_index); */
-  //printf("\n\n");
+
+  printf("freeing buddy: %d\n", start_index);
   BuddyAllocator_releaseBuddy(alloc, start_index);
-  
-  
 }
+
 void BuddyAllocator_print(BuddyAllocator* alloc){
   int position=1;
   printf("PRINT:\n");

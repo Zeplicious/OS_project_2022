@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "*.ejs": "html",
-        "stdlib.h": "c"
-    }
+        "stdlib.h": "c",
+        "disastros_syscalls.h": "c",
+        "buddy_allocator.h": "c",
+        "disastros_timer.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

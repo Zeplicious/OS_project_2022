@@ -1,7 +1,7 @@
 #pragma once
 #include "bit_map.h"
 #include "lista.h"
-#define LEVELS 16
+#include <math.h>
 
 
 
