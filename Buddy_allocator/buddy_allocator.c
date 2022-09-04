@@ -142,7 +142,10 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
   char* p=(char*) mem;
   int offset=p-alloc->memory;//calcolo l'offset tra il primo indirizzo del buffer, e l'indirizzo di memoria da liberare
   printf("offset: %d \n", offset);
-  assert(offset<alloc->memory_size);
+  if(offset>=alloc->memory_size || offset<0){
+    printf("Invalid free\n");
+    return;
+  }
   int unit=alloc->memory_size;
   int start_level=0;
   while(offset%unit){
@@ -157,7 +160,10 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem) {
     if(BitMap_bit(alloc->bitmap,start_index)!=0)break;
     start_index=start_index<<1;
     start_level++;
-    assert(start_index<alloc->bitmap->num_bits);
+    if(start_index>=alloc->bitmap->num_bits){
+      printf("No previous allocation or Double Free\n");
+      return;
+    }
   }
 
   printf("freeing buddy: %d\n", start_index);

@@ -102,9 +102,9 @@ int main(int argc, char** argv) {
   BuddyAllocator_free(&alloc, p3);
   BuddyAllocator_print(&alloc);
   printf("************************************************************************************************************\n"); */
-  int* array=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*256);
+  /* int* array=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*256);
    BuddyAllocator_print(&alloc);
-   int* arroy=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*256);
+   int* arroy=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*256); */
 
  /*  BuddyAllocator_print(&alloc);
   int* array=(int*) BuddyAllocator_malloc(&alloc,sizeof(int)*64);
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
   char* string=(char*) BuddyAllocator_malloc(&alloc,sizeof(char)*64);
   BuddyAllocator_print(&alloc);
   for(int i=0; i<64; i++)string[i]=0;
-  sprintf(string,"suca forte porco dio\n");
+  sprintf(string,"unicorni belli\n");
   printf("%s\n", string);
   printf("[");
   for(int i=0; i<64; i++)printf("%d, ",array[i]);
