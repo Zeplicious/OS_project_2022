@@ -12,7 +12,8 @@ Ho implementato una pseudomalloc per DisastrOS, a questo scopo ho:
 A DisastrOS mancava una malloc, utile nel sistema operativo per permettere ai processi di allocare memoria dinamicamente.
 
 ## How to run
-```
+Nel terminale:
+```console
 cd Buddy_allocator
 make
 cd ..
