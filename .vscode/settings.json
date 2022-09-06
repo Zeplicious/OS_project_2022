@@ -4,7 +4,8 @@
         "stdlib.h": "c",
         "disastros_syscalls.h": "c",
         "buddy_allocator.h": "c",
-        "disastros_timer.h": "c"
+        "disastros_timer.h": "c",
+        "disastros.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

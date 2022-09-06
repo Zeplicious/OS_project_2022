@@ -21,6 +21,8 @@ OBJS=pool_allocator.o\
      disastrOS_descriptor.o\
      disastrOS.o\
      disastrOS_fork.o\
+     disastrOS_malloc.o\
+     disastrOS_free.o\
      disastrOS_wait.o\
      disastrOS_spawn.o\
      disastrOS_exit.o\

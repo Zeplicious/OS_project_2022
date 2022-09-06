@@ -13,6 +13,10 @@ void internal_wait();
 
 void internal_spawn();
 
+void internal_malloc();
+
+void internal_free();
+
 void internal_shutdown();
 
 void internal_schedule();

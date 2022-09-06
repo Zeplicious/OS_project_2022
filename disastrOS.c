@@ -23,10 +23,10 @@ ListHead waiting_list;
 ListHead zombie_list;
 ListHead timer_list;
 // strutture statiche per gestire malloc
-static BuddyAllocator allocator;
-static BitMap bitmap;
-static BitMap check_bitmap;
-
+/* BuddyAllocator allocator;
+BitMap bitmap;
+BitMap check_bitmap;
+ */
 // a resource can be a device, a file or an ipc thing
 ListHead resources_list;
 
@@ -84,34 +84,11 @@ void setupSignals(void) {
 }
 
 void* disastrOS_malloc(size_t size){
-  assert(running);
-  BitMap_init(&bitmap,BITMAP_SIZE*8,running->buffer);
-  BitMap_init(&check_bitmap,BITMAP_SIZE*8,running->check_buffer);
-  BuddyAllocator_init(&allocator,
-                      &bitmap,
-                      &check_bitmap,
-                      BUDDY_LEVELS,
-                      running->memory,
-                      MEMORY_SIZE,
-                      MIN_BUCKET_SIZE);
-  void* ret=BuddyAllocator_malloc(&allocator,(int)size);
-  BuddyAllocator_print(&allocator);
-  return ret;
-  
+  disastrOS_syscall(DSOS_CALL_MALLOC, size);
+  return (void*) running->syscall_retvalue;
 }
 void disastrOS_free(void* mem){
-  assert(running);
-  BitMap_init(&bitmap,BITMAP_SIZE*8,running->buffer);
-  BitMap_init(&check_bitmap,BITMAP_SIZE*8,running->check_buffer);
-  BuddyAllocator_init(&allocator,
-                      &bitmap,
-                      &check_bitmap,
-                      BUDDY_LEVELS,
-                      running->memory,
-                      MEMORY_SIZE,
-                      MIN_BUCKET_SIZE);
-  BuddyAllocator_free(&allocator,mem);
-  BuddyAllocator_print(&allocator);
+  disastrOS_syscall(DSOS_CALL_FREE, mem);
 }
 
 
@@ -211,6 +188,12 @@ void disastrOS_start(void (*f)(void*), void* f_args, char* logfile){
 
   syscall_vector[DSOS_CALL_SHUTDOWN]      = internal_shutdown;
   syscall_numarg[DSOS_CALL_SHUTDOWN]      = 0;
+
+  syscall_vector[DSOS_CALL_MALLOC]     = internal_malloc;
+  syscall_numarg[DSOS_CALL_MALLOC]     = 1;
+
+  syscall_vector[DSOS_CALL_FREE]     = internal_free;
+  syscall_numarg[DSOS_CALL_FREE]     = 1;
 
   // setup the scheduling lists
   running=0;

@@ -47,7 +47,7 @@ typedef struct PCB{
   // we use long int so we can store pointers on 64 bit machines
   int syscall_num;
   long int syscall_args[DSOS_MAX_SYSCALLS_ARGS]; 
-  int syscall_retvalue;
+  long int syscall_retvalue;
 } PCB;
 
 // initializes the memory allocation

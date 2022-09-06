@@ -44,7 +44,8 @@
 #define DSOS_CALL_CLOSE_RESOURCE 8
 #define DSOS_CALL_DESTROY_RESOURCE 9
 #define DSOS_CALL_SHUTDOWN  10
-
+#define DSOS_CALL_MALLOC  11
+#define DSOS_CALL_FREE  12
 //resources
 #define DSOS_CREATE 0x1
 #define DSOS_READ 0x2
